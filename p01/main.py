@@ -4,6 +4,8 @@ from typing import Any
 from fastapi.responses import JSONResponse
 app = FastAPI()
 
+#test problem 1:
+
 @app.get("/ping" , status_code = 200) #we use to depict fixed status code
 def check_ping():
     return{"message" : "pong"}
