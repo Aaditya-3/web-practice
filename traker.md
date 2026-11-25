@@ -1,0 +1,22 @@
+| # | Level | Folder | Problem | Endpoints / Deliverable | FastAPI & Pytest Focus | Est. Time | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | L1: Basics | `p01/` | Core routing & param parsing | `GET /ping`, `/hello/{name}`, `/add`, `/square/{n}`, `POST /echo`, `GET /health`, JSON `404` | Path/query types, `httpx.AsyncClient`, parametrized tests | 1 hr | Not started |
+| 2 | L1: Basics | `p01/` | Schema & query validation | `POST /register` (201), `POST /products` (201), `GET /search` (200) | Pydantic v2 `Field`, `EmailStr`, `@model_validator`, `Query` bounds | 1–1.5 hrs | Not started |
+| 3 | L1: Basics | `p01/` | Error envelope & malformed JSON | Global `RequestValidationError` handler returning `{"error", "details"}` | `400` on `json_invalid` vs `422` on schema errors; raw broken JSON test | 1–1.5 hrs | Not started |
+| 4 | L2: CRUD | `p02/` | Todos full CRUD + partial updates | `POST/GET /todos`, `GET/PUT/PATCH/DELETE /todos/{id}`, `404` on missing ID | Separate Create/Update/Patch schemas, `model_dump(exclude_unset=True)` | 1.5–2 hrs | Not started |
+| 5 | L2: CRUD | `p02/` | Filtering & sorting | `GET /todos?completed=&sort=&order=` | `Literal` query validation, `422` on invalid sort keys | 0.5–1 hr | Not started |
+| 6 | L3: Database | `main_api/` | SQLite + SQLAlchemy + test DB | Rebuild Todos with SQLAlchemy 2.0 & Alembic migrations | `Depends(get_db)`, `app.dependency_overrides` with per-test DB reset | 2.5–3 hrs | Not started |
+| 7 | L3: Database | `main_api/` | DB-level uniqueness & conflicts | Books API with `UNIQUE` constraint on `isbn` | Catch `IntegrityError`, rollback session, return `409 Conflict` | 1–1.5 hrs | Not started |
+| 8 | L3: Database | `main_api/` | Relationships & N+1 prevention | `User` ↔ `Todo` FK, `GET /users/{id}/todos`, `GET /users` (nested) | `selectinload`/`joinedload`, SQL query counter asserting $O(1)$ queries | 2–2.5 hrs | Not started |
+| 9 | L3: Database | `main_api/` | Offset & cursor pagination | `GET /items?page=&page_size=` and `?cursor=&limit=` | Keyset query (`WHERE id > cursor LIMIT n+1`), mid-scroll insert test | 2 hrs | Not started |
+| 10 | L3: Database | `main_api/` | Concurrency & atomic transactions | `POST /items/{id}/purchase` decrementing stock | Conditional atomic `UPDATE ... WHERE stock >= 1`, `asyncio.gather` race test | 2.5–3 hrs | Not started |
+| 11 | L4: Auth | `main_api/` | Password hashing | `POST /auth/register` storing `bcrypt` hash | `UserOut` response model; assert DB has no plaintext & response hides hash | 1 hr | Not started |
+| 12 | L4: Auth | `main_api/` | JWT login & protected routes | `POST /auth/login` (401 on bad creds), `GET /me` | `PyJWT`, `Depends(get_current_user)`, test missing/tampered/expired tokens | 2 hrs | Not started |
+| 13 | L4: Auth | `main_api/` | Refresh token rotation & logout | `POST /auth/refresh`, `POST /auth/logout` | Hashed refresh token + `revoked`/`jti` in DB; test replay fails with `401` | 2.5–3 hrs | Not started |
+| 14 | L4: Auth | `main_api/` | Object-level ownership | Owner-only `PUT/PATCH/DELETE /todos/{id}` | `404` if missing, `403` if owned by another user; reusable `auth_headers` | 1–1.5 hrs | Not started |
+| 15 | L4: Auth | `main_api/` | Role-based access control (RBAC) | `GET /admin/users` | Dependency factory `require_role("admin")`; normal user `403`, admin `200` | 1 hr | Not started |
+| 16 | L5: Prod | `main_api/` | Middleware & observability | `X-Request-ID` header + method/path/status/latency logs | HTTP/ASGI middleware with `time.perf_counter()`, UUID generation & echo test | 1–1.5 hrs | Not started |
+| 17 | L5: Prod | `main_api/` | Idempotency keys | `POST /orders` with `Idempotency-Key` header | Store `(key, payload_hash, status, body)`; replay same res, mismatch → `409` | 2–2.5 hrs | Not started |
+| 18 | L5: Prod | `main_api/` | Rate limiter | 5 req/min per client; 6th returns `429` + rate limit headers | Sliding window / token bucket with injectable clock (no `time.sleep()`) | 2–2.5 hrs | Not started |
+| 19 | L5: Prod | `main_api/` | Async background jobs | `POST /reports` (202), `GET /reports/{id}` | `BackgroundTasks` with fresh DB session, state machine (`PENDING` → `COMPLETED`/`FAILED`) | 2–2.5 hrs | Not started |
+| 20 | Stretch | `main_api/` | Stretch picks (choose 1–2) | TTL cache / File upload / URL shortener / WebSocket chat / Dockerize | Pick based on weak spots (Dockerize + File upload are highest ROI) | 4–8 hrs | Not started |
